@@ -35,7 +35,7 @@ The name of the library
 
 #### opts
 
-Type: `Array`
+Type: `Object`
 
 ##### only
 
