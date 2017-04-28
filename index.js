@@ -9,19 +9,22 @@ module.exports = (name, opts) => {
 			return reject(new Error(`Please specify the name of the library`));
 		}
 
-		got(`https://api.cdnjs.com/libraries?search=${name}&fields=assets`, {json: true})
+		got(`https://api.cdnjs.com/libraries?search=${name}&fields=version,assets`, {json: true})
 		.then(res => {
 			if (res.body.results.length > 0) {
 				// Return only the first result
 				const library = res.body.results[0];
+				const versionAssets = library.assets.filter(files => {
+					return files.version === library.version;
+				});
 				// https://cdnjs.cloudflare.com/ajax/libs/[library]/[version]/[files]
 				const rootDirectory = library.latest.substring(
 					0,
-					(library.latest.indexOf(library.assets[0].version) +
-					library.assets[0].version.length)
+					(library.latest.indexOf(library.version) +
+					library.version.length)
 				).concat('/');
 				// Return only the latest version
-				let files = library.assets[0].files.map(item => urlResolve(rootDirectory, item));
+				let files = versionAssets[0].files.map(item => urlResolve(rootDirectory, item));
 
 				if (opts && opts.only) {
 					switch (opts.only) {
@@ -37,7 +40,7 @@ module.exports = (name, opts) => {
 
 				return resolve({
 					name: library.name,
-					version: library.assets[0].version,
+					version: versionAssets[0].version,
 					files
 				});
 			}
