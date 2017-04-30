@@ -28,6 +28,10 @@ module.exports = (name, opts) => {
 					return files.version === library.version;
 				});
 
+				if (!versionAssets[0]) {
+					return reject(new Error(`Specified release version for ${library.name} does not exist`));
+				}
+
 				// Return only the latest version
 				let files = versionAssets[0].files.map(item => urlResolve(
 					`https://cdnjs.cloudflare.com/ajax/libs/${library.name}/${versionAssets[0].version}/`,
