@@ -18,6 +18,13 @@ test('success: should return the correct name of the library', async t => {
 	t.is(f.name, 'twitter-bootstrap');
 });
 
+test('success: should return the correct major version when specified', async t => {
+	const f = await m('bootstrap@3');
+	t.is(f.version, '3.3.7');
+	// Resource URLs should also include the correct version number
+	t.true(f.files[0].indexOf('3.3.7') > -1);
+});
+
 test('failure: should return an error object', async t => {
 	await m()
 	.catch(err => {

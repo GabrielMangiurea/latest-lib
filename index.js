@@ -5,8 +5,14 @@ const got = require('got');
 
 module.exports = (name, opts) => {
 	return new Promise((resolve, reject) => {
+		let desiredMajor = null;
+
 		if (!name) {
 			return reject(new Error(`Please specify the name of the library`));
+		}
+
+		if (name.indexOf('@') > -1) {
+			[name, desiredMajor] = name.split('@');
 		}
 
 		got(`https://api.cdnjs.com/libraries?search=${name}&fields=version,assets`, {json: true})
@@ -15,16 +21,18 @@ module.exports = (name, opts) => {
 				// Return only the first result
 				const library = res.body.results[0];
 				const versionAssets = library.assets.filter(files => {
+					if (desiredMajor) {
+						return new RegExp(`^${desiredMajor}`).test(files.version) === true;
+					}
+
 					return files.version === library.version;
 				});
-				// https://cdnjs.cloudflare.com/ajax/libs/[library]/[version]/[files]
-				const rootDirectory = library.latest.substring(
-					0,
-					(library.latest.indexOf(library.version) +
-					library.version.length)
-				).concat('/');
+
 				// Return only the latest version
-				let files = versionAssets[0].files.map(item => urlResolve(rootDirectory, item));
+				let files = versionAssets[0].files.map(item => urlResolve(
+					`https://cdnjs.cloudflare.com/ajax/libs/${library.name}/${versionAssets[0].version}/`,
+					item)
+				);
 
 				if (opts && opts.only) {
 					switch (opts.only) {

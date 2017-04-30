@@ -15,10 +15,16 @@ $ npm install --save latest-lib
 ```javascript
 const latestLib = require('latest-lib');
 
-// search for bootstrap
+// search for the latest version of bootstrap
 latestLib('bootstrap')
 .then(library => console.log(library))
 //=> {name: 'twitter-bootstrap', version: '4.0.0-alpha.6', files: [...]}
+.catch(err => console.log(err));
+
+// search for the latest version of bootstrap 3
+latestLib('bootstrap@3')
+.then(library => console.log(library))
+//=> {name: 'twitter-bootstrap', version: '3.3.7', files: [...]}
 .catch(err => console.log(err));
 ```
 
@@ -27,11 +33,24 @@ latestLib('bootstrap')
 
 ### latestLib(name[, opts])
 
+Returns a `Promise` containing an object with the following properties:
+
+- On success:
+  - **name** `String`
+  - **version** `String`
+  - **files** `Array`
+
+
+- On error:
+  - an `Error` object
+
 #### name
 
 Type: `String`
 
 The name of the library
+
+Suffixing the name with `@[number]` will fetch the latest version of `[number]` major release
 
 #### opts
 

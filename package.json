@@ -1,6 +1,6 @@
 {
   "name": "latest-lib",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Get the latest version of a CSS or JavaScript library hosted on CDNJS",
   "main": "index.js",
   "scripts": {
